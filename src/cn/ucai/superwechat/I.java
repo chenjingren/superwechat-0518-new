@@ -209,4 +209,13 @@ public interface I {
 	String REQUEST_FIND_GROUP_BY_ID					= 		"find_group_by_group_id";
 	/** 客户端发送的根据群组环信id查找群组请求 */
 	String REQUEST_FIND_GROUP_BY_HXID 				= 		"find_group_by_group_hxid";
+	//http://10.0.2.2:8080/SuperWeChatServer/Server?request=download_avatar&avatarType=
+	//下载用户头像请求拼接
+	String REQUEST_DOWNLAOD_AVATAR_USER =SuperWeChatApplication.SERVICE_ROOT
+			+ "?" + KEY_REQUEST +"="+REQUEST_DOWNLOAD_AVATAR
+			+ "&" + AVATAR_TYPE + "=" ;
+	//下载群组头像请求拼接
+	String REQUEST_DOWNLOAD_AVARAR_GROUP = SuperWeChatApplication.SERVICE_ROOT
+			+ "?" + KEY_REQUEST +"="+REQUEST_DOWNLOAD_GROUP_AVATAR
+			+ "&" + AVATAR_TYPE + "=" ;
 }
