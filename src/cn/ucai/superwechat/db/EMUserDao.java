@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.chatuidemo.db;
+package cn.ucai.superwechat.db;
 
 import java.util.List;
 import java.util.Map;
@@ -19,10 +19,10 @@ import java.util.Map;
 import android.content.Context;
 
 
-import com.easemob.chatuidemo.domain.RobotUser;
-import com.easemob.chatuidemo.domain.User;
+import cn.ucai.superwechat.domain.RobotUser;
+import cn.ucai.superwechat.domain.User;
 
-public class UserDao {
+public class EMUserDao {
 	public static final String TABLE_NAME = "uers";
 	public static final String COLUMN_NAME_ID = "username";
 	public static final String COLUMN_NAME_NICK = "nick";
@@ -38,7 +38,7 @@ public class UserDao {
 	public static final String ROBOT_COLUMN_NAME_AVATAR = "avatar";
 	
 	
-	public UserDao(Context context) {
+	public EMUserDao(Context context) {
 	    DemoDBManager.getInstance().onInit(context);
 	}
 
