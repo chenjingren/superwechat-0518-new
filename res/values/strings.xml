@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    
-    <string name="app_name">HuanXin UI Demo</string>
+
+    <string name="app_name">SuperWeChat</string>
     <string name="text_ack_msg">Read</string>
     <string name="text_delivered_msg">Delivered</string>
     <string name="back">Back</string>
@@ -120,7 +120,7 @@
     <string name="is_down_please_wait">Downloading video, please try again later</string>
     <string name="Exit_the_group_chat">Exit the group</string>
     <string name="Please_enter_a_username">Please enter a username</string>
-    
+
     <string name="not_add_myself">"Can't add myself"</string>
     <string name="This_user_is_already_your_friend">This user is already your friend</string>
     <string name="Add_a_friend">Let me to be your friend!</string>
@@ -194,6 +194,7 @@
     <string name="temporary_does_not">Currently the video size greater than 10M is not supported!</string>
     <string name="Video_footage">Video record</string>
     <string name="User_name_cannot_be_empty">User name cannot be empty!</string>
+    <string name="User_name_cannot_be_wd">User name can only alpha or number or underline !</string>
     <string name="Password_cannot_be_empty">Password cannot be empty!</string>
     <string name="please_set_the_current">"Please set the current user's nickname \ n to ios offline push not userid but Nick, see comments"</string>
     <string name="Is_landing">logining..</string>
@@ -252,7 +253,7 @@
     <string name="Is_download_voice_click_later">Downloading the voice message, click later</string>
     <string name="Send_the_following_pictures">Send the following pictures?</string>
     <string name="search_new">Search</string>
-    
+
     <string name="Delete_the_contact">Delete the contact</string>
     <string name="Move_into_the_blacklist_new">Move into the blacklist</string>
     <string name="Change_the_group_name">Change group name</string>
@@ -280,6 +281,9 @@
     <string name="robot_chat">Robot chat</string>
     <string name="title_user_profile">User Profile</string>
     <string name="nickname">NickName</string>
+    <string name="upload_avatar_failed">upload avatar failed</string>
+    <string name="cancel_register_failed"> cancel register failed</string>
+
     <string name="dl_title_upload_photo">Upload Photo</string>
     <string name="dl_msg_local_upload">Local Upload</string>
     <string name="dl_msg_take_photo">Task Photo</string>
@@ -295,4 +299,11 @@
     <string name="toast_updatenick_fail">update nickname fail!</string>
     <string name="toast_updatephoto_success">update photo success!</string>
     <string name="toast_updatephoto_fail">update photo fail!</string>
+    <string name="Add_buddy_success">add buddy success</string>
+    <string name="Nick_name_cannot_be_empty">Nick name cannot be empty!</string>
+    <string name="Group_name_existed">Group name existed</string>
+    <string name="Create_groups_Success">Success to create groups</string>
+    <string name="Create_groups_Failed">Failed to create groups</string>
+    <string name="photo">photo</string>
+    <string name="near_people_hint">See nearby people\'s function will get your location information, your location information will be kept for a period of time. Through the list of the top right corner to remove functions can be manually remove location information at any time.</string>
 </resources>
