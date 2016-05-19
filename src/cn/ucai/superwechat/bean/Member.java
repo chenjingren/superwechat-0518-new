@@ -94,7 +94,7 @@ public class Member extends User implements java.io.Serializable {
 				+ "]";
 	}
 
-	@Override
+	/*@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof Member)) return false;
@@ -108,5 +108,28 @@ public class Member extends User implements java.io.Serializable {
 	@Override
 	public int hashCode() {
 		return mmemberId.hashCode();
+	}*/
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Member)) return false;
+
+		Member member = (Member) o;
+
+		if (!mmemberUserId.equals(member.mmemberUserId)) return false;
+		if (!mmemberUserName.equals(member.mmemberUserName)) return false;
+		if (!mmemberGroupId.equals(member.mmemberGroupId)) return false;
+		return mmemberGroupHxid.equals(member.mmemberGroupHxid);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = mmemberUserId.hashCode();
+		result = 31 * result + mmemberUserName.hashCode();
+		result = 31 * result + mmemberGroupId.hashCode();
+		result = 31 * result + mmemberGroupHxid.hashCode();
+		return result;
 	}
 }
