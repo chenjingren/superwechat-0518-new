@@ -129,4 +129,52 @@ public class SuperWeChatApplication extends Application {
 	private ArrayList<Group> publicGroupList = new ArrayList<Group>();
 	/**全局的群组成员列表*/
 	private HashMap<String,ArrayList<Member>> groupMembers = new HashMap<String, ArrayList<Member>>();
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public ArrayList<Contact> getContactList() {
+		return contactList;
+	}
+
+	public void setContactList(ArrayList<Contact> contactList) {
+		this.contactList = contactList;
+	}
+
+	public HashMap<String, Contact> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(HashMap<String, Contact> userList) {
+		this.userList = userList;
+	}
+
+	public ArrayList<Group> getGroupList() {
+		return groupList;
+	}
+
+	public void setGroupList(ArrayList<Group> groupList) {
+		this.groupList = groupList;
+	}
+
+	public ArrayList<Group> getPublicGroupList() {
+		return publicGroupList;
+	}
+
+	public void setPublicGroupList(ArrayList<Group> publicGroupList) {
+		this.publicGroupList = publicGroupList;
+	}
+
+	public HashMap<String, ArrayList<Member>> getGroupMembers() {
+		return groupMembers;
+	}
+
+	public void setGroupMembers(HashMap<String, ArrayList<Member>> groupMembers) {
+		this.groupMembers = groupMembers;
+	}
 }
