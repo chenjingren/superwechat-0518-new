@@ -13,7 +13,7 @@ public class Group extends Location implements java.io.Serializable {
 	 * 
 	 */
 	private Integer mgroupId;
-	private String mgroupHxid;
+	private String mgroupHxid;  //环信群组ID
 	private String mgroupName;
 	private String mgroupDescription;
 	private String mgroupOwner;
@@ -151,6 +151,20 @@ public class Group extends Location implements java.io.Serializable {
 				+ ", MGroupIsPublic=" + mgroupIsPublic
 				+ ", MGroupAllowInvites=" + mgroupAllowInvites + "]";
 	}
-	
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Group)) return false;
+
+		Group group = (Group) o;
+
+		return mgroupId.equals(group.mgroupId);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return mgroupId.hashCode();
+	}
 }
