@@ -11,10 +11,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.chatuidemo.utils;
+package cn.ucai.superwechat.utils;
+
+import android.content.Context;
+import android.os.Environment;
 
 import com.easemob.util.EMLog;
 import com.easemob.util.PathUtil;
+
+import java.io.File;
 
 public class ImageUtils {
 //	public static String getThumbnailImagePath(String imagePath) {
@@ -41,6 +46,15 @@ public class ImageUtils {
         EMLog.d("msg", "thum image path:" + path);
         return path;
     }
+
+	public static String getAvatarPath(Context context,String path){
+		File dir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+		File floder = new File(dir, path);
+		if (!floder.exists()){
+			floder.mkdir();
+		}
+		return floder.getAbsolutePath();
+	}
 	
 	
 }
