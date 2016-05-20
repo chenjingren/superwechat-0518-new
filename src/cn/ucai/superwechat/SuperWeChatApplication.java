@@ -25,6 +25,7 @@ import cn.ucai.superwechat.bean.Contact;
 import cn.ucai.superwechat.bean.Group;
 import cn.ucai.superwechat.bean.Member;
 import cn.ucai.superwechat.bean.User;
+import cn.ucai.superwechat.data.RequestManager;
 
 public class SuperWeChatApplication extends Application {
 	//让模拟器访问服务器
@@ -65,6 +66,8 @@ public class SuperWeChatApplication extends Application {
          * }
          */
         hxSDKHelper.onInit(applicationContext);
+
+		RequestManager.init(applicationContext);
 	}
 
 	public static SuperWeChatApplication getInstance() {
