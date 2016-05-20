@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#eff2f6"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:id="@+id/layout_register">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -11,10 +12,11 @@
         android:layout_weight="0.5" >
 
         <TextView
+            android:drawablePadding="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="超级微信"
+            android:text="@string/app_name"
             android:textColor="#000"
             android:textSize="18sp"
             android:drawableLeft="@drawable/mobile"
@@ -46,13 +48,13 @@
                 android:src="@drawable/icon_account" />
 
             <EditText
-                android:id="@+id/username"
+                android:id="@+id/etUserName"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/iv_username"
                 android:background="@null"
-                android:hint="用户名"
+                android:hint="@string/user_name"
                 android:paddingLeft="10dip"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -76,13 +78,13 @@
                 android:src="@drawable/icon_account" />
 
             <EditText
-                android:id="@+id/nick"
+                android:id="@+id/etNick"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/iv_nick"
                 android:background="@null"
-                android:hint="昵称"
+                android:hint="@string/nickname"
                 android:paddingLeft="10dip"
                 android:singleLine="true"
                 android:textSize="18sp" />
@@ -106,13 +108,13 @@
                 android:src="@drawable/icon_pwd" />
 
             <EditText
-                android:id="@+id/password"
+                android:id="@+id/etPassword"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/iv_password"
                 android:background="@null"
-                android:hint="密码"
+                android:hint="@string/password"
                 android:inputType="textPassword"
                 android:paddingLeft="10dip"
                 android:singleLine="true"
@@ -137,13 +139,13 @@
                 android:src="@drawable/icon_pwd" />
 
             <EditText
-                android:id="@+id/confirm_password"
+                android:id="@+id/et_confirm_password"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@id/iv_password2"
                 android:background="@null"
-                android:hint="确认密码"
+                android:hint="@string/confirmpassword"
                 android:inputType="textPassword"
                 android:paddingLeft="10dip"
                 android:singleLine="true"
@@ -168,7 +170,7 @@
                 android:src="@drawable/default_avatar" />
 
             <EditText
-                android:id="@+id/avatar"
+                android:id="@+id/et_avatar_path"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
@@ -189,6 +191,7 @@
             android:orientation="horizontal" >
 
             <Button
+                android:id="@+id/btnLogin"
                 android:layout_width="0dp"
                 android:layout_weight="0.5"
                 android:layout_height="wrap_content"
@@ -196,14 +199,14 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="10dp"
                 android:background="#fff"
-                android:onClick="register"
                 android:paddingBottom="7dp"
                 android:paddingTop="7dp"
-                android:text="登录"
+                android:text="@string/login"
                 android:textColor="@android:color/background_dark"
                 android:textSize="20sp" />
 
             <Button
+                android:id="@+id/btnRegister"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -211,13 +214,11 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/button_login_bg"
-                android:onClick="register"
                 android:paddingBottom="7dp"
                 android:paddingTop="7dp"
-                android:text="注册"
+                android:text="@string/register"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
         </LinearLayout>
     </LinearLayout>
-
 </LinearLayout>
