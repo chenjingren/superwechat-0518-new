@@ -57,7 +57,7 @@ public class ApiParams extends HashMap<String, String> {
 	}
 
 	public String getRequestUrl(String request) throws Exception {
-		StringBuilder url = new StringBuilder(SuperWeChatApplication.SERVER_ROOT);
+		StringBuilder url = new StringBuilder(SuperWeChatApplication.SERVICE_ROOT);
 		if (this == null || this.isEmpty()) {
 			return url.toString();
 		}
