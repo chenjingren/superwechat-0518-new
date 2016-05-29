@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.chatuidemo.activity;
+package cn.ucai.superwechat.activity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,15 +30,17 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
 
-import com.easemob.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
-import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.DemoHXSDKHelper;
-import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.adapter.ContactAdapter;
-import com.easemob.chatuidemo.domain.User;
-import com.easemob.chatuidemo.widget.Sidebar;
+import cn.ucai.superwechat.Constant;
+import cn.ucai.superwechat.DemoHXSDKHelper;
+import cn.ucai.superwechat.adapter.ContactAdapter;
+import cn.ucai.superwechat.bean.Contact;
+import cn.ucai.superwechat.domain.EMUser;
+import cn.ucai.superwechat.utils.Utils;
+import cn.ucai.superwechat.widget.Sidebar;
 
 public class GroupPickContactsActivity extends BaseActivity {
 	private ListView listView;
@@ -53,7 +55,7 @@ public class GroupPickContactsActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_group_pick_contacts);
+		setContentView(cn.ucai.superwechat.R.layout.activity_group_pick_contacts);
 
 		// String groupName = getIntent().getStringExtra("groupName");
 		String groupId = getIntent().getStringExtra("groupId");
@@ -67,63 +69,130 @@ public class GroupPickContactsActivity extends BaseActivity {
 		if(exitingMembers == null)
 			exitingMembers = new ArrayList<String>();
 		// 获取好友列表
-		final List<User> alluserList = new ArrayList<User>();
-		for (User user : ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().values()) {
-			if (!user.getUsername().equals(Constant.NEW_FRIENDS_USERNAME) & !user.getUsername().equals(Constant.GROUP_USERNAME) & !user.getUsername().equals(Constant.CHAT_ROOM) & !user.getUsername().equals(Constant.CHAT_ROBOT))
+		final ArrayList<Contact> alluserList = new ArrayList<Contact>();
+		for (Contact user : SuperWeChatApplication.getInstance().getUserList().values()) {
+			if (!user.getMContactCname().equals(Constant.NEW_FRIENDS_USERNAME) & !user.getMContactCname().equals(Constant.GROUP_USERNAME) & !user.getMContactCname().equals(Constant.CHAT_ROOM) & !user.getMContactCname().equals(Constant.CHAT_ROBOT))
 				alluserList.add(user);
 		}
 		// 对list进行排序
-		Collections.sort(alluserList, new Comparator<User>() {
+		Collections.sort(alluserList, new Comparator<Contact>() {
 			@Override
-			public int compare(User lhs, User rhs) {
-				return (lhs.getUsername().compareTo(rhs.getUsername()));
+			public int compare(Contact lhs, Contact rhs) {
+				return (lhs.getHeader().compareTo(rhs.getHeader()));
 
 			}
 		});
 
-		listView = (ListView) findViewById(R.id.list);
-		contactAdapter = new PickContactAdapter(this, R.layout.row_contact_with_checkbox, alluserList);
+		listView = (ListView) findViewById(cn.ucai.superwechat.R.id.list);
+		contactAdapter = new PickContactAdapter(this, cn.ucai.superwechat.R.layout.row_contact_with_checkbox, alluserList);
 		listView.setAdapter(contactAdapter);
-		((Sidebar) findViewById(R.id.sidebar)).setListView(listView);
+		((Sidebar) findViewById(cn.ucai.superwechat.R.id.sidebar)).setListView(listView);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+				CheckBox checkBox = (CheckBox) view.findViewById(cn.ucai.superwechat.R.id.checkbox);
 				checkBox.toggle();
 
 			}
 		});
 	}
 
-	/**
-	 * 确认选择的members
-	 * 
-	 * @param v
-	 */
-	public void save(View v) {
-		setResult(RESULT_OK, new Intent().putExtra("newmembers", getToBeAddMembers().toArray(new String[0])));
-		finish();
+	private String getToBeAddMembersId() {
+		Contact[] contacts = new Contact[0];
+		int length = contactAdapter.isCheckedArray.length;
+		for (int i=0;i<length;i++){
+			Contact contact = contactAdapter.getItem(i);
+			if (contactAdapter.isCheckedArray[i]&&!exitingMembers.contains(contact.getMContactCname())){
+				contacts = Utils.add(contacts,contact);
+			}
+		}
+
+		String userIds ="";
+		for (int i=0;i<contacts.length;i++){
+			userIds+=contacts[i].getMContactCid()+",";
+		}
+		if (contacts.length>0){
+			return userIds;
+		}
+		return null;
 	}
 
+	private String getToBeAddMembersName(){
+		Contact[] contacts = new Contact[0];
+		int length = contactAdapter.isCheckedArray.length;
+		for (int i=0;i<length;i++){
+			Contact contact = contactAdapter.getItem(i);
+			if (contactAdapter.isCheckedArray[i]&&!exitingMembers.contains(contact.getMContactCname())){
+				contacts = Utils.add(contacts,contact);
+			}
+		}
+
+		String userNames ="";
+		for (int i=0;i<contacts.length;i++){
+			userNames +=contacts[i].getMContactCname()+",";
+		}
+		if (contacts.length>0){
+			return userNames;
+		}
+		return null;
+	}
+
+//在原来基础上修改
+	public void save(View v) {
+		String toBeAddMembersIds = getToBeAddMembersId();
+		String toBeAddMembersNames = getToBeAddMembersName();
+		Intent intent = new Intent("get_data_from_GroupPickContactActivity");
+		intent.putExtra("newMembersId",toBeAddMembersIds);
+		intent.putExtra("newMembersName",toBeAddMembersNames);
+		sendStickyBroadcast(intent);
+		setResult(RESULT_OK,new Intent());
+		finish();
+
+		/*setResult(RESULT_OK, new Intent().putExtra("newMembersName", getToBeAddMembersName()));
+		setResult(RESULT_OK,new Intent().putExtra("newMembersId",getToBeAddMembersId()));
+		finish();*/
+	}
+//在原来基础上修改
+	/*private Contact[] getToBeAddMembersUpdate() {
+		Contact [] contacts =new Contact[0];
+		int length = contactAdapter.isCheckedArray.length;
+		for (int i = 0; i < length; i++) {
+			Contact contact = contactAdapter.getItem(i);
+			if (contactAdapter.isCheckedArray[i] && !exitingMembers.contains(contact.getMContactCname())) {
+				contacts = Utils.add(contacts,contact);
+			}
+		}
+		if (contacts.length>0){
+			return contacts;
+		}
+		return null;
+	}*/
+	/**
+	 * 确认选择的members
+	 *
+	 * @param v
+	 */
+	/*public void save(View v) {
+		setResult(RESULT_OK, new Intent().putExtra("newmembers", getToBeAddMembers().toArray(new String[0])));
+		finish();
+	}*/
 	/**
 	 * 获取要被添加的成员
-	 * 
+	 *
 	 * @return
 	 */
-	private List<String> getToBeAddMembers() {
+	/*private List<String> getToBeAddMembers() {
 		List<String> members = new ArrayList<String>();
 		int length = contactAdapter.isCheckedArray.length;
 		for (int i = 0; i < length; i++) {
-			String username = contactAdapter.getItem(i).getUsername();
+			String username = contactAdapter.getItem(i).getMContactCname();
 			if (contactAdapter.isCheckedArray[i] && !exitingMembers.contains(username)) {
 				members.add(username);
 			}
 		}
-
 		return members;
-	}
-
+	}*/
 	/**
 	 * adapter
 	 */
@@ -131,7 +200,7 @@ public class GroupPickContactsActivity extends BaseActivity {
 
 		private boolean[] isCheckedArray;
 
-		public PickContactAdapter(Context context, int resource, List<User> users) {
+		public PickContactAdapter(Context context, int resource, ArrayList<Contact> users) {
 			super(context, resource, users);
 			isCheckedArray = new boolean[users.size()];
 		}
@@ -140,13 +209,13 @@ public class GroupPickContactsActivity extends BaseActivity {
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			View view = super.getView(position, convertView, parent);
 //			if (position > 0) {
-				final String username = getItem(position).getUsername();
+				final String username = getItem(position).getMContactCname();
 				// 选择框checkbox
-				final CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+				final CheckBox checkBox = (CheckBox) view.findViewById(cn.ucai.superwechat.R.id.checkbox);
 				if(exitingMembers != null && exitingMembers.contains(username)){
-					checkBox.setButtonDrawable(R.drawable.checkbox_bg_gray_selector);
+					checkBox.setButtonDrawable(cn.ucai.superwechat.R.drawable.checkbox_bg_gray_selector);
 				}else{
-					checkBox.setButtonDrawable(R.drawable.checkbox_bg_selector);
+					checkBox.setButtonDrawable(cn.ucai.superwechat.R.drawable.checkbox_bg_selector);
 				}
 				if (checkBox != null) {
 					// checkBox.setOnCheckedChangeListener(null);
