@@ -100,7 +100,7 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/btnRegister"
+                android:id="@+id/btn_Register"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dip"
@@ -115,7 +115,7 @@
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/btnLogin"
+                android:id="@+id/btn_Login"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dip"
