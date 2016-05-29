@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.chatuidemo.adapter;
+package cn.ucai.superwechat.adapter;
 
 import java.util.List;
 
@@ -32,10 +32,9 @@ import android.widget.Toast;
 
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroupManager;
-import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.db.InviteMessgeDao;
-import com.easemob.chatuidemo.domain.InviteMessage;
-import com.easemob.chatuidemo.domain.InviteMessage.InviteMesageStatus;
+
+import cn.ucai.superwechat.db.InviteMessgeDao;
+import cn.ucai.superwechat.domain.InviteMessage;
 
 public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 
@@ -53,26 +52,26 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 		final ViewHolder holder;
 		if (convertView == null) {
 			holder = new ViewHolder();
-			convertView = View.inflate(context, R.layout.row_invite_msg, null);
-			holder.avator = (ImageView) convertView.findViewById(R.id.avatar);
-			holder.reason = (TextView) convertView.findViewById(R.id.message);
-			holder.name = (TextView) convertView.findViewById(R.id.name);
-			holder.status = (Button) convertView.findViewById(R.id.user_state);
-			holder.groupContainer = (LinearLayout) convertView.findViewById(R.id.ll_group);
-			holder.groupname = (TextView) convertView.findViewById(R.id.tv_groupName);
+			convertView = View.inflate(context, cn.ucai.superwechat.R.layout.row_invite_msg, null);
+			holder.avator = (ImageView) convertView.findViewById(cn.ucai.superwechat.R.id.avatar);
+			holder.reason = (TextView) convertView.findViewById(cn.ucai.superwechat.R.id.message);
+			holder.name = (TextView) convertView.findViewById(cn.ucai.superwechat.R.id.name);
+			holder.status = (Button) convertView.findViewById(cn.ucai.superwechat.R.id.user_state);
+			holder.groupContainer = (LinearLayout) convertView.findViewById(cn.ucai.superwechat.R.id.ll_group);
+			holder.groupname = (TextView) convertView.findViewById(cn.ucai.superwechat.R.id.tv_groupName);
 			// holder.time = (TextView) convertView.findViewById(R.id.time);
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		String str1 = context.getResources().getString(R.string.Has_agreed_to_your_friend_request);
-		String str2 = context.getResources().getString(R.string.agree);
+		String str1 = context.getResources().getString(cn.ucai.superwechat.R.string.Has_agreed_to_your_friend_request);
+		String str2 = context.getResources().getString(cn.ucai.superwechat.R.string.agree);
 		
-		String str3 = context.getResources().getString(R.string.Request_to_add_you_as_a_friend);
-		String str4 = context.getResources().getString(R.string.Apply_to_the_group_of);
-		String str5 = context.getResources().getString(R.string.Has_agreed_to);
-		String str6 = context.getResources().getString(R.string.Has_refused_to);
+		String str3 = context.getResources().getString(cn.ucai.superwechat.R.string.Request_to_add_you_as_a_friend);
+		String str4 = context.getResources().getString(cn.ucai.superwechat.R.string.Apply_to_the_group_of);
+		String str5 = context.getResources().getString(cn.ucai.superwechat.R.string.Has_agreed_to);
+		String str6 = context.getResources().getString(cn.ucai.superwechat.R.string.Has_refused_to);
 		final InviteMessage msg = getItem(position);
 		if (msg != null) {
 			if(msg.getGroupId() != null){ // 显示群聊提示
@@ -86,15 +85,15 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 			holder.name.setText(msg.getFrom());
 			// holder.time.setText(DateUtils.getTimestampString(new
 			// Date(msg.getTime())));
-			if (msg.getStatus() == InviteMesageStatus.BEAGREED) {
+			if (msg.getStatus() == InviteMessage.InviteMesageStatus.BEAGREED) {
 				holder.status.setVisibility(View.INVISIBLE);
 				holder.reason.setText(str1);
-			} else if (msg.getStatus() == InviteMesageStatus.BEINVITEED || msg.getStatus() == InviteMesageStatus.BEAPPLYED) {
+			} else if (msg.getStatus() == InviteMessage.InviteMesageStatus.BEINVITEED || msg.getStatus() == InviteMessage.InviteMesageStatus.BEAPPLYED) {
 				holder.status.setVisibility(View.VISIBLE);
 				holder.status.setEnabled(true);
 				holder.status.setBackgroundResource(android.R.drawable.btn_default);
 				holder.status.setText(str2);
-				if(msg.getStatus() == InviteMesageStatus.BEINVITEED){
+				if(msg.getStatus() == InviteMessage.InviteMesageStatus.BEINVITEED){
 					if (msg.getReason() == null) {
 						// 如果没写理由
 						holder.reason.setText(str3);
@@ -113,11 +112,11 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 						acceptInvitation(holder.status, msg);
 					}
 				});
-			} else if (msg.getStatus() == InviteMesageStatus.AGREED) {
+			} else if (msg.getStatus() == InviteMessage.InviteMesageStatus.AGREED) {
 				holder.status.setText(str5);
 				holder.status.setBackgroundDrawable(null);
 				holder.status.setEnabled(false);
-			} else if(msg.getStatus() == InviteMesageStatus.REFUSED){
+			} else if(msg.getStatus() == InviteMessage.InviteMesageStatus.REFUSED){
 				holder.status.setText(str6);
 				holder.status.setBackgroundDrawable(null);
 				holder.status.setEnabled(false);
@@ -137,9 +136,9 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 	 */
 	private void acceptInvitation(final Button button, final InviteMessage msg) {
 		final ProgressDialog pd = new ProgressDialog(context);
-		String str1 = context.getResources().getString(R.string.Are_agree_with);
-		final String str2 = context.getResources().getString(R.string.Has_agreed_to);
-		final String str3 = context.getResources().getString(R.string.Agree_with_failure);
+		String str1 = context.getResources().getString(cn.ucai.superwechat.R.string.Are_agree_with);
+		final String str2 = context.getResources().getString(cn.ucai.superwechat.R.string.Has_agreed_to);
+		final String str3 = context.getResources().getString(cn.ucai.superwechat.R.string.Agree_with_failure);
 		pd.setMessage(str1);
 		pd.setCanceledOnTouchOutside(false);
 		pd.show();
@@ -158,7 +157,7 @@ public class NewFriendsMsgAdapter extends ArrayAdapter<InviteMessage> {
 						public void run() {
 							pd.dismiss();
 							button.setText(str2);
-							msg.setStatus(InviteMesageStatus.AGREED);
+							msg.setStatus(InviteMessage.InviteMesageStatus.AGREED);
 							// 更新db
 							ContentValues values = new ContentValues();
 							values.put(InviteMessgeDao.COLUMN_NAME_STATUS, msg.getStatus().ordinal());
