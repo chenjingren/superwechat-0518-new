@@ -1,9 +1,11 @@
-package com.easemob.chatuidemo.activity;
+package cn.ucai.superwechat.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+
+import cn.ucai.superwechat.fragments.ImageGridFragment;
 
 public class ImageGridActivity extends FragmentActivity {
 
