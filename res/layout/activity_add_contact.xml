@@ -24,13 +24,12 @@
             android:textSize="18sp" />
         
         <Button
-            android:id="@+id/search"
+            android:id="@+id/btn_search_user"
             android:layout_width="54dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:background="@drawable/common_tab_bg"
-            android:onClick="searchContact"
             android:text="@string/button_search"
             android:textColor="#fff"
             android:textSize="16sp" />
@@ -61,7 +60,7 @@
             android:background="@drawable/mm_listitem"
             android:duplicateParentState="true" >
 
-            <ImageView
+            <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/avatar"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -82,19 +81,29 @@
 
 
             <Button
-                android:id="@+id/indicator"
+                android:id="@+id/btn_add_contact"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="11dp"
                 android:background="@drawable/button_bg"
-                android:onClick="addContact"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:text="@string/button_add"
                 android:textSize="14sp" />
         </RelativeLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_no_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="#000"
+        android:layout_gravity="center_horizontal"
+        android:textSize="26sp"
+        android:visibility="gone"
+        android:text="无结果"/>
 
 </LinearLayout>
