@@ -9,13 +9,21 @@ buildscript {
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile fileTree(include: '*.jar', dir: 'libs')
+    compile files('libs/gson-2.2.4.jar')
+    compile files('libs/okhttp-2.7.5.jar')
+    compile files('libs/okio-1.6.0.jar')
+    compile files('libs/volley.jar')
+    compile files('libs/okhttp-urlconnection-2.7.5.jar')
 }
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
+    defaultConfig{
+        applicationId "cn.ucai.superwechat"
+    }
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
