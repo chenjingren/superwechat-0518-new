@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#eee"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:id="@+id/layout_new_group">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -35,12 +36,12 @@
             android:textSize="20sp" />
 
         <Button
+            android:id="@+id/btn_save"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:background="@drawable/common_tab_bg"
-            android:onClick="save"
             android:text="@string/button_save"
             android:textColor="#fff"
             android:textSize="18sp" />
@@ -71,8 +72,38 @@
         android:paddingLeft="5dp"
         android:paddingTop="5dp"
         android:textSize="18sp" />
-    
-    
+
+    <RelativeLayout
+        android:id="@+id/layout_group_avatar"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#fff" >
+
+        <ImageView
+            android:id="@+id/iv_group_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:src="@drawable/group_icon" />
+
+        <EditText
+            android:id="@+id/et_group_avatar_path"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/iv_group_avatar"
+            android:background="@null"
+            android:hint="群图标"
+            android:paddingLeft="10dip"
+            android:singleLine="true"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
     <LinearLayout 
         android:layout_width="match_parent"
        android:layout_height="39dp"
