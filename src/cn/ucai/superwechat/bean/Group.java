@@ -23,10 +23,19 @@ public class Group extends Location implements java.io.Serializable {
 	private Boolean mgroupIsPublic;
 	private Boolean mgroupAllowInvites;
 
+	public String header;
 	// Constructors
 
 	/** default constructor */
 	public Group() {
+	}
+
+	public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
 	}
 
 	/** minimal constructor */
