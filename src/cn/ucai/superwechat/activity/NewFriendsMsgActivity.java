@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.chatuidemo.activity;
+package cn.ucai.superwechat.activity;
 
 import java.util.List;
 
@@ -19,13 +19,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-import com.easemob.applib.controller.HXSDKHelper;
-import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.DemoHXSDKHelper;
-import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.adapter.NewFriendsMsgAdapter;
-import com.easemob.chatuidemo.db.InviteMessgeDao;
-import com.easemob.chatuidemo.domain.InviteMessage;
+import cn.ucai.superwechat.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.Constant;
+import cn.ucai.superwechat.DemoHXSDKHelper;
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.adapter.NewFriendsMsgAdapter;
+import cn.ucai.superwechat.db.InviteMessgeDao;
+import cn.ucai.superwechat.domain.InviteMessage;
 
 /**
  * 申请与通知
@@ -45,7 +45,7 @@ public class NewFriendsMsgActivity extends BaseActivity {
 		//设置adapter
 		NewFriendsMsgAdapter adapter = new NewFriendsMsgAdapter(this, 1, msgs); 
 		listView.setAdapter(adapter);
-		((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME).setUnreadMsgCount(0);
+		((DemoHXSDKHelper) HXSDKHelper.getInstance()).getContactList().get(Constant.NEW_FRIENDS_USERNAME).setUnreadMsgCount(0);
 		
 	}
 
