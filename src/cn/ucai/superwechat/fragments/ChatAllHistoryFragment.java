@@ -1,4 +1,4 @@
-package com.easemob.chatuidemo.activity;
+package cn.ucai.superwechat.fragments;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,8 +6,10 @@ import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -37,11 +39,12 @@ import android.widget.Toast;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMConversation.EMConversationType;
-import com.easemob.chatuidemo.Constant;
-import com.easemob.chatuidemo.DemoApplication;
-import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.adapter.ChatAllHistoryAdapter;
-import com.easemob.chatuidemo.db.InviteMessgeDao;
+import cn.ucai.superwechat.Constant;
+import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.activity.ChatActivity;
+import cn.ucai.superwechat.activity.MainActivity;
+import cn.ucai.superwechat.adapter.ChatAllHistoryAdapter;
+import cn.ucai.superwechat.db.InviteMessgeDao;
 
 /**
  * 显示所有会话记录，比较简单的实现，更好的可能是把陌生人存入本地，这样取到的聊天记录是可控的
@@ -62,7 +65,8 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
 		
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_conversation_history, container, false);
+		registerContactListChangedReceiver();
+		return inflater.inflate(cn.ucai.superwechat.R.layout.fragment_conversation_history, container, false);
 	}
 
 	@Override
@@ -71,25 +75,25 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
 		if(savedInstanceState != null && savedInstanceState.getBoolean("isConflict", false))
             return;
 		inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		errorItem = (RelativeLayout) getView().findViewById(R.id.rl_error_item);
-		errorText = (TextView) errorItem.findViewById(R.id.tv_connect_errormsg);		
+		errorItem = (RelativeLayout) getView().findViewById(cn.ucai.superwechat.R.id.rl_error_item);
+		errorText = (TextView) errorItem.findViewById(cn.ucai.superwechat.R.id.tv_connect_errormsg);
 		
 		conversationList.addAll(loadConversationsWithRecentChat());
-		listView = (ListView) getView().findViewById(R.id.list);
+		listView = (ListView) getView().findViewById(cn.ucai.superwechat.R.id.list);
 		adapter = new ChatAllHistoryAdapter(getActivity(), 1, conversationList);
 		// 设置adapter
 		listView.setAdapter(adapter);
 				
 		
-		final String st2 = getResources().getString(R.string.Cant_chat_with_yourself);
+		final String st2 = getResources().getString(cn.ucai.superwechat.R.string.Cant_chat_with_yourself);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				EMConversation conversation = adapter.getItem(position);
 				String username = conversation.getUserName();
-				if (username.equals(DemoApplication.getInstance().getUserName()))
-					Toast.makeText(getActivity(), st2, 0).show();
+				if (username.equals(SuperWeChatApplication.getInstance().getUserName()))
+					Toast.makeText(getActivity(), st2, Toast.LENGTH_SHORT).show();
 				else {
 				    // 进入聊天页面
 				    Intent intent = new Intent(getActivity(), ChatActivity.class);
@@ -126,11 +130,11 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
 
 		});
 		// 搜索框
-		query = (EditText) getView().findViewById(R.id.query);
-		String strSearch = getResources().getString(R.string.search);
+		query = (EditText) getView().findViewById(cn.ucai.superwechat.R.id.query);
+		String strSearch = getResources().getString(cn.ucai.superwechat.R.string.search);
 		query.setHint(strSearch);
 		// 搜索框中清除button
-		clearSearch = (ImageButton) getView().findViewById(R.id.search_clear);
+		clearSearch = (ImageButton) getView().findViewById(cn.ucai.superwechat.R.id.search_clear);
 		query.addTextChangedListener(new TextWatcher() {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				adapter.getFilter().filter(s);
@@ -168,7 +172,7 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		// if(((AdapterContextMenuInfo)menuInfo).position > 0){ m,
-		getActivity().getMenuInflater().inflate(R.menu.delete_message, menu); 
+		getActivity().getMenuInflater().inflate(cn.ucai.superwechat.R.menu.delete_message, menu);
 		// }
 	}
 
@@ -176,10 +180,10 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
 	public boolean onContextItemSelected(MenuItem item) {
 		boolean handled = false;
 		boolean deleteMessage = false;
-		if (item.getItemId() == R.id.delete_message) {
+		if (item.getItemId() == cn.ucai.superwechat.R.id.delete_message) {
 			deleteMessage = true;
 			handled = true;
-		} else if (item.getItemId() == R.id.delete_conversation) {
+		} else if (item.getItemId() == cn.ucai.superwechat.R.id.delete_conversation) {
 			deleteMessage = false;
 			handled = true;
 		}
@@ -209,8 +213,7 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
 
 	/**
 	 * 获取所有会话
-	 * 
-	 * @param context
+	 *
 	 * @return
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         +	 */
 	private List<EMConversation> loadConversationsWithRecentChat() {
@@ -248,8 +251,9 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
 
 	/**
 	 * 根据最后一条消息的时间排序
-	 * 
-	 * @param usernames
+	 * *
+	 * *
+	 * *
 	 */
 	private void sortConversationByLastChatTime(List<Pair<Long, EMConversation>> conversationList) {
 		Collections.sort(conversationList, new Comparator<Pair<Long, EMConversation>>() {
@@ -298,4 +302,30 @@ public class ChatAllHistoryFragment extends Fragment implements View.OnClickList
     @Override
     public void onClick(View v) {        
     }
+
+	class ContactListChangedReceiver extends BroadcastReceiver{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			adapter.notifyDataSetChanged();
+		}
+	}
+
+	ContactListChangedReceiver mContactListChangedReceiver;
+
+	private void registerContactListChangedReceiver (){
+		mContactListChangedReceiver = new ContactListChangedReceiver();
+		IntentFilter filter = new IntentFilter("update_contact_list");
+		IntentFilter filterGroup = new IntentFilter("update_group_list");
+		getActivity().registerReceiver(mContactListChangedReceiver,filterGroup);
+		getActivity().registerReceiver(mContactListChangedReceiver,filter);
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		if (mContactListChangedReceiver!=null){
+			getActivity().unregisterReceiver(mContactListChangedReceiver);
+		}
+	}
 }
