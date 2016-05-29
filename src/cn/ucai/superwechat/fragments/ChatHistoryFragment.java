@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.chatuidemo.activity;
+package cn.ucai.superwechat.fragments;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,19 +46,21 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.easemob.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.activity.ChatActivity;
+import cn.ucai.superwechat.activity.MainActivity;
+import cn.ucai.superwechat.applib.controller.HXSDKHelper;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMContact;
 import com.easemob.chat.EMConversation;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
 import com.easemob.chat.EMMessage;
-import com.easemob.chatuidemo.DemoApplication;
-import com.easemob.chatuidemo.DemoHXSDKHelper;
-import com.easemob.chatuidemo.R;
-import com.easemob.chatuidemo.adapter.ChatHistoryAdapter;
-import com.easemob.chatuidemo.db.InviteMessgeDao;
-import com.easemob.chatuidemo.domain.User;
+import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.DemoHXSDKHelper;
+import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.adapter.ChatHistoryAdapter;
+import cn.ucai.superwechat.db.InviteMessgeDao;
+import cn.ucai.superwechat.domain.EMUser;
 
 /**
  * 聊天记录Fragment
@@ -68,7 +70,7 @@ public class ChatHistoryFragment extends Fragment {
 
 	private InputMethodManager inputMethodManager;
 	private ListView listView;
-	private Map<String, User> contactList;
+	private Map<String, EMUser> contactList;
 	private ChatHistoryAdapter adapter;
 	private EditText query;
 	private ImageButton clearSearch;
@@ -87,7 +89,7 @@ public class ChatHistoryFragment extends Fragment {
 		inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		errorText = (TextView) errorItem.findViewById(R.id.tv_connect_errormsg);
 		// contact list
-		contactList = ((DemoHXSDKHelper)HXSDKHelper.getInstance()).getContactList();
+		contactList = ((DemoHXSDKHelper) HXSDKHelper.getInstance()).getContactList();
 		listView = (ListView) getView().findViewById(R.id.list);
 		adapter = new ChatHistoryAdapter(getActivity(), 1, loadUsersWithRecentChat());
 		// 设置adapter
@@ -98,8 +100,8 @@ public class ChatHistoryFragment extends Fragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				EMContact emContact = adapter.getItem(position);
-				if (adapter.getItem(position).getUsername().equals(DemoApplication.getInstance().getUserName()))
-					Toast.makeText(getActivity(), st, 0).show();
+				if (adapter.getItem(position).getUsername().equals(SuperWeChatApplication.getInstance().getUserName()))
+					Toast.makeText(getActivity(), st, Toast.LENGTH_SHORT).show();
 				else {
 					// 进入聊天页面
 					  Intent intent = new Intent(getActivity(), ChatActivity.class);
@@ -205,14 +207,13 @@ public class ChatHistoryFragment extends Fragment {
 	
 	/**
 	 * 获取有聊天记录的users和groups
-	 * 
-	 * @param context
+	 *
 	 * @return
 	 */
 	private List<EMContact> loadUsersWithRecentChat() {
 		List<EMContact> resultList = new ArrayList<EMContact>();
 		//获取有聊天记录的users，不包括陌生人
-		for (User user : contactList.values()) {
+		for (EMUser user : contactList.values()) {
 			EMConversation conversation = EMChatManager.getInstance().getConversation(user.getUsername());
 			if (conversation.getMsgCount() > 0) {
 				resultList.add(user);
@@ -234,7 +235,7 @@ public class ChatHistoryFragment extends Fragment {
 	/**
 	 * 根据最后一条消息的时间排序
 	 * 
-	 * @param usernames
+	 * @param contactList
 	 */
 	private void sortUserByLastChatTime(List<EMContact> contactList) {
 		Collections.sort(contactList, new Comparator<EMContact>() {
@@ -273,6 +274,4 @@ public class ChatHistoryFragment extends Fragment {
 			refresh();
 		}
 	}
-	
-	
 }
