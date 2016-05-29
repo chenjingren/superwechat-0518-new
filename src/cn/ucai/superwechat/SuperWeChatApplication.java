@@ -66,7 +66,7 @@ public class SuperWeChatApplication extends Application {
          * }
          */
         hxSDKHelper.onInit(applicationContext);
-
+		//实例化volley
 		RequestManager.init(applicationContext);
 	}
 
