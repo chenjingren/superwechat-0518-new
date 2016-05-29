@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#eff2f6"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:id="@+id/layout_user_profile">
     
 	<RelativeLayout
         android:id="@+id/title"
@@ -34,7 +35,7 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             >
-            <ImageView 
+            <com.android.volley.toolbox.NetworkImageView
                 android:id="@+id/user_head_avatar"
                 android:layout_width="60dip"
                 android:layout_height="60dip"
@@ -82,7 +83,6 @@
             android:layout_width="match_parent"
             android:layout_height="1px"
             android:background="@color/gray_pressed"
-            
             />
         <RelativeLayout 
             android:id="@+id/rl_nickname"
