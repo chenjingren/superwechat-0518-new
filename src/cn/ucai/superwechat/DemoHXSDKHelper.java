@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.easemob.chatuidemo;
+package cn.ucai.superwechat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
-import android.R.bool;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -33,33 +32,33 @@ import com.easemob.EMCallBack;
 import com.easemob.EMChatRoomChangeListener;
 import com.easemob.EMEventListener;
 import com.easemob.EMNotifierEvent;
-import com.easemob.applib.controller.HXSDKHelper;
-import com.easemob.applib.model.HXNotifier;
-import com.easemob.applib.model.HXNotifier.HXNotificationInfoProvider;
-import com.easemob.applib.model.HXSDKModel;
+import cn.ucai.superwechat.applib.controller.HXSDKHelper;
+import cn.ucai.superwechat.applib.model.HXNotifier;
+import cn.ucai.superwechat.applib.model.HXNotifier.HXNotificationInfoProvider;
+import cn.ucai.superwechat.applib.model.HXSDKModel;
 import com.easemob.chat.CmdMessageBody;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMChatOptions;
 import com.easemob.chat.EMMessage;
 import com.easemob.chat.EMMessage.ChatType;
 import com.easemob.chat.EMMessage.Type;
-import com.easemob.chatuidemo.activity.ChatActivity;
-import com.easemob.chatuidemo.activity.MainActivity;
-import com.easemob.chatuidemo.activity.VideoCallActivity;
-import com.easemob.chatuidemo.activity.VoiceCallActivity;
-import com.easemob.chatuidemo.domain.RobotUser;
-import com.easemob.chatuidemo.domain.User;
-import com.easemob.chatuidemo.receiver.CallReceiver;
-import com.easemob.chatuidemo.utils.CommonUtils;
+import cn.ucai.superwechat.activity.ChatActivity;
+import cn.ucai.superwechat.activity.MainActivity;
+import cn.ucai.superwechat.activity.VideoCallActivity;
+import cn.ucai.superwechat.activity.VoiceCallActivity;
+import cn.ucai.superwechat.domain.RobotUser;
+import cn.ucai.superwechat.domain.EMUser;
+import cn.ucai.superwechat.receiver.CallReceiver;
+import cn.ucai.superwechat.utils.CommonUtils;
 import com.easemob.util.EMLog;
 import com.easemob.util.EasyUtils;
 
 /**
  * Demo UI HX SDK helper class which subclass HXSDKHelper
- * @author easemob
+ * @author ucai
  *
  */
-public class DemoHXSDKHelper extends HXSDKHelper{
+public class DemoHXSDKHelper extends HXSDKHelper {
 
     private static final String TAG = "DemoHXSDKHelper";
     
@@ -71,7 +70,7 @@ public class DemoHXSDKHelper extends HXSDKHelper{
     /**
      * contact list in cache
      */
-    private Map<String, User> contactList;
+    private Map<String, EMUser> contactList;
     
     /**
      * robot list in cache
@@ -179,7 +178,7 @@ public class DemoHXSDKHelper extends HXSDKHelper{
                     EMLog.d(TAG, String.format("透传消息：action:%s,message:%s", action,message.toString()));
                     final String str = appContext.getString(R.string.receive_the_passthrough);
                     
-                    final String CMD_TOAST_BROADCAST = "easemob.demo.cmd.toast";
+                    final String CMD_TOAST_BROADCAST = "ucai.demo.cmd.toast";
                     IntentFilter cmdFilter = new IntentFilter(CMD_TOAST_BROADCAST);
                     
                     if(broadCastReceiver == null){
@@ -219,7 +218,7 @@ public class DemoHXSDKHelper extends HXSDKHelper{
         EMChatManager.getInstance().registerEventListener(eventListener);
         
         EMChatManager.getInstance().addChatRoomChangeListener(new EMChatRoomChangeListener(){
-            private final static String ROOM_CHANGE_BROADCAST = "easemob.demo.chatroom.changeevent.toast";
+            private final static String ROOM_CHANGE_BROADCAST = "ucai.demo.chatroom.changeevent.toast";
             private final IntentFilter filter = new IntentFilter(ROOM_CHANGE_BROADCAST);
             private boolean registered = false;
             
@@ -423,7 +422,7 @@ public class DemoHXSDKHelper extends HXSDKHelper{
      *
      * @return
      */
-    public Map<String, User> getContactList() {
+    public Map<String, EMUser> getContactList() {
         if (getHXId() != null && contactList == null) {
             contactList = ((DemoHXSDKModel) getModel()).getContactList();
         }
@@ -476,14 +475,14 @@ public class DemoHXSDKHelper extends HXSDKHelper{
      *
      * @param contactList
      */
-    public void setContactList(Map<String, User> contactList) {
+    public void setContactList(Map<String, EMUser> contactList) {
         this.contactList = contactList;
     }
     
     /**
      * 保存单个user 
      */
-    public void saveContact(User user){
+    public void saveContact(EMUser user){
     	contactList.put(user.getUsername(), user);
     	((DemoHXSDKModel) getModel()).saveContact(user);
     }
@@ -533,15 +532,14 @@ public class DemoHXSDKHelper extends HXSDKHelper{
     }
 
     /**
-     * update User cach And db
+     * update EMUser cach And db
      *
-     * @param contactList
      */
-    public void updateContactList(List<User> contactInfoList) {
-         for (User u : contactInfoList) {
+    public void updateContactList(List<EMUser> contactInfoList) {
+         for (EMUser u : contactInfoList) {
 			contactList.put(u.getUsername(), u);
          }
-         ArrayList<User> mList = new ArrayList<User>();
+         ArrayList<EMUser> mList = new ArrayList<EMUser>();
          mList.addAll(contactList.values());
         ((DemoHXSDKModel)getModel()).saveContactList(mList);
     }
