@@ -56,7 +56,7 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 
 	List<String> list;
 
-	List<Group> copyGroupList;
+	ArrayList<Group> mCopyGroupList;
 
 	MyFilter myFilter;
 
@@ -69,11 +69,10 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 		newGroup = context.getResources().getString(R.string.The_new_group_chat);
 		addPublicGroup = context.getResources().getString(R.string.add_public_group_chat);
 		this.mGroupList = groups;
-		mContext = context;
+		this.mContext = context;
 
-		copyGroupList = new ArrayList<>();
-		copyGroupList.addAll(mGroupList);
-
+		mCopyGroupList = new ArrayList<Group>();
+		mCopyGroupList.addAll(groups);
 	}
 
 	@Override
@@ -102,6 +101,7 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 			}
 			final EditText query = (EditText) convertView.findViewById(R.id.query);
 			final ImageButton clearSearch = (ImageButton) convertView.findViewById(R.id.search_clear);
+
 			query.addTextChangedListener(new TextWatcher() {
 				public void onTextChanged(CharSequence s, int start, int before, int count) {
 					getFilter().filter(s);
@@ -171,9 +171,11 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 	}
 
 	public void initList(ArrayList<Group> list){
+		//mGroupList.clear();
 		mGroupList.addAll(list);
 		notifyDataSetChanged();
 	}
+
 
 	@Override
 	public Object[] getSections() {
@@ -200,15 +202,14 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 	}
 
 	@Override
-	public int getPositionForSection(int sectionIndex) {
-		return positionOfSection.get(sectionIndex);
+	public int getPositionForSection(int section) {
+		return positionOfSection.get(section);
 	}
 
 	@Override
 	public int getSectionForPosition(int position) {
 		return sectionOfPosition.get(position);
 	}
-
 
 	public Filter getFilter() {
 		if(myFilter==null){
@@ -217,7 +218,7 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 		return myFilter;
 	}
 
-	private  class  MyFilter extends Filter {
+	private class  MyFilter extends Filter{
 		List<Group> mOriginalList = null;
 
 		public MyFilter(List<Group> myList) {
@@ -227,27 +228,30 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 		@Override
 		protected synchronized FilterResults performFiltering(CharSequence prefix) {
 			FilterResults results = new FilterResults();
-			if (mOriginalList == null) {
+			if(mOriginalList==null){
 				mOriginalList = new ArrayList<Group>();
 			}
 			Log.d(TAG, "contacts original size: " + mOriginalList.size());
-			Log.d(TAG, "contacts copy size: " + copyGroupList.size());
+			Log.d(TAG, "contacts copy size: " + mCopyGroupList.size());
 
-			if (prefix == null || prefix.length() == 0) {
-				results.values = copyGroupList;
-				results.count = copyGroupList.size();
-			} else {
+			if(prefix==null || prefix.length()==0){
+				results.values = mCopyGroupList;
+				results.count = mCopyGroupList.size();
+			}else{
 				String prefixString = prefix.toString();
 				final int count = mOriginalList.size();
 				final ArrayList<Group> newValues = new ArrayList<Group>();
-				for (int i = 0; i < count; i++) {
+				for(int i=0;i<count;i++){
 					final Group group = mOriginalList.get(i);
-					String username = group.getMGroupName();
-
-					if (username.contains(prefixString)) {
+					
+					String groupname = group.getMGroupName();
+					String groupName = UserUtils.getPinYinFromHanZi(group.getMGroupName());
+					String hxid = group.getMGroupHxid();
+					if(groupname.contains(prefixString)||groupName.contains(prefix)||hxid.contains(prefix)){
 						newValues.add(group);
-					} else {
-						final String[] words = username.split(" ");
+					}
+					else{
+						final String[] words = groupname.split(" ");
 						final int wordCount = words.length;
 
 						// Start at index 0, in case valueText starts with space(s)
@@ -259,15 +263,16 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 						}
 					}
 				}
-				results.values = newValues;
-				results.count = newValues.size();
+				results.values=newValues;
+				results.count=newValues.size();
 			}
 			Log.d(TAG, "contacts filter results size: " + results.count);
 			return results;
 		}
 
 		@Override
-		protected void publishResults(CharSequence constraint, FilterResults results) {
+		protected synchronized void publishResults(CharSequence constraint,
+												   FilterResults results) {
 			mGroupList.clear();
 			mGroupList.addAll((List<Group>)results.values);
 			Log.d(TAG, "publish contacts filter results size: " + results.count);
@@ -281,12 +286,13 @@ public class GroupAdapter extends BaseAdapter implements SectionIndexer{
 		}
 	}
 
+
 	@Override
 	public void notifyDataSetChanged() {
 		super.notifyDataSetChanged();
 		if(!notiyfyByFilter){
-			copyGroupList.clear();
-			copyGroupList.addAll(mGroupList);
+			mCopyGroupList.clear();
+			mCopyGroupList.addAll(mGroupList);
 		}
 	}
 }
