@@ -116,6 +116,8 @@ public class PublicGroupsSeachActivity extends BaseActivity{
             @Override
             public void onResponse(Group group) {
                 if (group!=null){
+
+
                     searchedGroup =group;
                     containerLayout.setVisibility(View.VISIBLE);
                     nameText.setText(searchedGroup.getMGroupName());
