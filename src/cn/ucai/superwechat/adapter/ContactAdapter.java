@@ -193,7 +193,7 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 		for (int i = 1; i < count; i++) {
 
 			String letter = getItem(i).getHeader();
-			EMLog.d(TAG, "contactadapter getsection getHeader:" + letter + " name:" + getItem(i).getMContactCname());
+			Log.d(TAG, "contactadapter getsection getHeader:" + letter + " name:" + getItem(i).getMContactCname());
 			int section = list.size() - 1;
 			if (list.get(section) != null && !list.get(section).equals(letter)) {
 				list.add(letter);
@@ -225,8 +225,8 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 			if(mOriginalList==null){
 			    mOriginalList = new ArrayList<Contact>();
 			}
-			EMLog.d(TAG, "contacts original size: " + mOriginalList.size());
-			EMLog.d(TAG, "contacts copy size: " + copyUserList.size());
+			Log.d(TAG, "contacts original size: " + mOriginalList.size());
+			Log.d(TAG, "contacts copy size: " + copyUserList.size());
 			
 			if(prefix==null || prefix.length()==0){
 				results.values = copyUserList;
@@ -260,7 +260,7 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 				results.values=newValues;
 				results.count=newValues.size();
 			}
-			EMLog.d(TAG, "contacts filter results size: " + results.count);
+			Log.d(TAG, "contacts filter results size: " + results.count);
 			return results;
 		}
 
@@ -269,7 +269,7 @@ public class ContactAdapter extends BaseAdapter implements SectionIndexer{
 				FilterResults results) {
 			userList.clear();
 			userList.addAll((List<Contact>)results.values);
-			EMLog.d(TAG, "publish contacts filter results size: " + results.count);
+			Log.d(TAG, "publish contacts filter results size: " + results.count);
 			if (results.count > 0) {
 			    notiyfyByFilter = true;
 				notifyDataSetChanged();
