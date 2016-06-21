@@ -417,7 +417,9 @@ public class MessageAdapter extends BaseAdapter{
 		// 群聊时，显示接收的消息的发送人的名称
 		if ((chatType == ChatType.GroupChat || chatType == ChatType.ChatRoom) && message.direct == EMMessage.Direct.RECEIVE){
 		    //demo里使用username代码nick
-			UserUtils.setUserNick(message.getFrom(), holder.tv_usernick);
+			//UserUtils.setUserNick(message.getFrom(), holder.tv_usernick);
+
+			UserUtils.setGroupMemberNick(username,message.getFrom(), holder.tv_usernick);
 		}
 		if(message.direct == EMMessage.Direct.SEND){
 			UserUtils.setCurrentUserNick(holder.tv_usernick);
@@ -573,7 +575,7 @@ public class MessageAdapter extends BaseAdapter{
 	        //显示自己头像
 	        UserUtils.setCurrentUserAvatar(context, imageView);
 	    }else{
-	        UserUtils.setUserAvatar(context, message.getFrom(), imageView);
+				UserUtils.setUserAvatar(context, message.getFrom(), imageView);
 	    }
 	    imageView.setOnClickListener(new View.OnClickListener() {
 			
@@ -594,7 +596,11 @@ public class MessageAdapter extends BaseAdapter{
 			UserUtils.setCurrentUserBeanAvatar(imageView);
 		}else{
 			//UserUtils.setUserAvatar(context, message.getFrom(), imageView);
-			UserUtils.setUserBeanAvatar(message.getFrom(),imageView);
+			if (message.getChatType().equals(ChatType.GroupChat)){
+				UserUtils.setUserAvatar(UserUtils.getAvatarPath(message.getFrom()),imageView);
+			}else {
+				UserUtils.setUserBeanAvatar(message.getFrom(),imageView);
+			}
 		}
 		imageView.setOnClickListener(new View.OnClickListener() {
 
@@ -603,6 +609,7 @@ public class MessageAdapter extends BaseAdapter{
 				Intent intent = new Intent();
 				intent.setClass(context, UserProfileActivity.class);
 				intent.putExtra("username", message.getFrom());
+				intent.putExtra("hxid",username);
 				context.startActivity(intent);
 			}
 		});
@@ -1421,7 +1428,7 @@ public class MessageAdapter extends BaseAdapter{
 					// holder.staus_iv.setVisibility(View.VISIBLE);
 				    
 				    if(message.getError() == EMError.MESSAGE_SEND_INVALID_CONTENT){
-				        Toast.makeText(activity, activity.getString(cn.ucai.superwechat.R.string.send_fail) + activity.getString(cn.ucai.superwechat.R.string.error_send_invalid_content), 0)
+				        Toast.makeText(activity, activity.getString(cn.ucai.superwechat.R.string.send_fail) + activity.getString(cn.ucai.superwechat.R.string.error_send_invalid_content), Toast.LENGTH_SHORT)
                         .show();
 				    }else if(message.getError() == EMError.MESSAGE_SEND_NOT_IN_THE_GROUP){
 				        Toast.makeText(activity, activity.getString(cn.ucai.superwechat.R.string.send_fail) + activity.getString(cn.ucai.superwechat.R.string.error_send_not_in_the_group), Toast.LENGTH_SHORT)
