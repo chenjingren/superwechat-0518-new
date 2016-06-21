@@ -17,11 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,6 +33,7 @@ import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,10 +42,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.toolbox.NetworkImageView;
 import com.easemob.chat.EMChatManager;
 import com.easemob.chat.EMGroup;
 import com.easemob.chat.EMGroupManager;
+
+import cn.ucai.superwechat.I;
 import cn.ucai.superwechat.R;
+import cn.ucai.superwechat.SuperWeChatApplication;
+import cn.ucai.superwechat.bean.Group;
+import cn.ucai.superwechat.bean.Member;
+import cn.ucai.superwechat.bean.Message;
+import cn.ucai.superwechat.data.ApiParams;
+import cn.ucai.superwechat.data.GsonRequest;
 import cn.ucai.superwechat.utils.UserUtils;
 import cn.ucai.superwechat.widget.ExpandGridView;
 import com.easemob.exceptions.EaseMobException;
@@ -65,6 +79,13 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	private Button exitBtn;
 	private Button deleteBtn;
 	private EMGroup group;
+
+	Group mGroup;
+
+	ArrayList<Member> groupMember;
+
+	String currentUserName;
+
 	private GridAdapter adapter;
 	private int referenceWidth;
 	private int referenceHeight;
@@ -93,18 +114,31 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-	    
+		setContentView(R.layout.activity_group_details);
 	    // 获取传过来的groupid
         groupId = getIntent().getStringExtra("groupId");
         group = EMGroupManager.getInstance().getGroup(groupId);
 
-        // we are not supposed to show the group if we don't find the group
-        if(group == null){
+		groupMember = SuperWeChatApplication.getInstance().getGroupMembers().get(groupId);
+
+		currentUserName = SuperWeChatApplication.getInstance().getUserName();
+
+		mGroup = (Group) getIntent().getSerializableExtra("mGroup");
+		ArrayList<Group> groupList = SuperWeChatApplication.getInstance().getGroupList();
+		for (Group group :groupList){
+			if (group.getMGroupHxid().equals(groupId)){
+				mGroup = group;
+				return;
+			}
+		}
+
+		// we are not supposed to show the group if we don't find the group
+        if(group == null ||mGroup==null){
             finish();
             return;
         }
         
-		setContentView(R.layout.activity_group_details);
+
 		instance = this;
 		st = getResources().getString(R.string.people);
 		clearAllHistory = (RelativeLayout) findViewById(R.id.clear_all_history);
@@ -143,12 +177,19 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 			exitBtn.setVisibility(View.GONE);
 			deleteBtn.setVisibility(View.VISIBLE);
 		}
-		
-		((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount() + st);
-		
-		List<String> members = new ArrayList<String>();
-		members.addAll(group.getMembers());
-		
+
+		String groupTitle = mGroup.getMGroupName()+"("+mGroup.getMGroupAffiliationsCount()+")";
+		((TextView) findViewById(R.id.group_name)).setText(groupTitle);
+
+		//((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount() + st);
+
+		/*List<String> members = new ArrayList<String>();
+		members.addAll(group.getMembers());*/
+
+		ArrayList<Member> members = new ArrayList<Member>();
+		members.addAll(groupMember);
+		//adapter.addAll(members);
+
 		adapter = new GridAdapter(this, R.layout.grid, members);
 		userGridview.setAdapter(adapter);
 
@@ -178,6 +219,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		clearAllHistory.setOnClickListener(this);
 		blacklistLayout.setOnClickListener(this);
 		changeGroupNameLayout.setOnClickListener(this);
+
+		registerDownloadMembersReceiver();
 
 	}
 
@@ -237,8 +280,10 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 							    EMGroupManager.getInstance().changeGroupName(groupId, returnData);
 								runOnUiThread(new Runnable() {
 									public void run() {
-										((TextView) findViewById(R.id.group_name)).setText(returnData + "(" + group.getAffiliationsCount()
-												+ st);
+										/*((TextView) findViewById(R.id.group_name)).setText(returnData + "(" + group.getAffiliationsCount()
+												+ st);*/
+										String groupTitle = mGroup.getMGroupName()+"("+mGroup.getMGroupAffiliationsCount()+")";
+										((TextView) findViewById(R.id.group_name)).setText(groupTitle);
 										progressDialog.dismiss();
 										Toast.makeText(getApplicationContext(), st6, Toast.LENGTH_SHORT).show();
 									}
@@ -290,10 +335,17 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	}
 
 	private void refreshMembers(){
+		String groupTitle = mGroup.getMGroupName()+"("+mGroup.getMGroupAffiliationsCount()+")";
+		((TextView) findViewById(R.id.group_name)).setText(groupTitle);
+		ArrayList<Member> groupMembers =
+				SuperWeChatApplication.getInstance().getGroupMembers().get(groupId);
+		Log.e(TAG,"groupMembers="+groupMembers);
+
 	    adapter.clear();
-        
-        List<String> members = new ArrayList<String>();
-        members.addAll(group.getMembers());
+
+		Log.e(TAG,"groupMembers="+groupMembers);
+		ArrayList<Member> members = new ArrayList<Member>();
+        members.addAll(groupMembers);
         adapter.addAll(members);
         
         adapter.notifyDataSetChanged();
@@ -340,7 +392,15 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-				    EMGroupManager.getInstance().exitFromGroup(groupId);
+					String path = new ApiParams()
+							.with(I.Member.GROUP_ID,group.getGroupId())
+							.with(I.Member.USER_NAME,currentUserName)
+							.getRequestUrl(I.REQUEST_DELETE_GROUP_MEMBER);
+
+					executeRequest(new GsonRequest<Message>(path,Message.class,
+							responseExitGropListener(),errorListener()));
+
+				    /*EMGroupManager.getInstance().exitFromGroup(groupId);
 					runOnUiThread(new Runnable() {
 						public void run() {
 							progressDialog.dismiss();
@@ -349,7 +409,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 							if(ChatActivity.activityInstance != null)
 							    ChatActivity.activityInstance.finish();
 						}
-					});
+					});*/
 				} catch (final Exception e) {
 					runOnUiThread(new Runnable() {
 						public void run() {
@@ -360,6 +420,35 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				}
 			}
 		}).start();
+	}
+
+	private Response.Listener<Message> responseExitGropListener() {
+		return new Response.Listener<Message>() {
+			@Override
+			public void onResponse(Message msg) {
+				if (msg.isResult()){
+					try {
+						EMGroupManager.getInstance().exitFromGroup(groupId);
+
+						runOnUiThread(new Runnable() {
+							public void run() {
+								progressDialog.dismiss();
+								setResult(RESULT_OK);
+								finish();
+								if(ChatActivity.activityInstance != null)
+									ChatActivity.activityInstance.finish();
+							}
+						});
+					} catch (EaseMobException e) {
+						e.printStackTrace();
+					}
+				}else {
+					progressDialog.dismiss();
+					Toast.makeText(GroupDetailsActivity.this,
+							msg.getMsg(),Toast.LENGTH_SHORT).show();
+				}
+			}
+		};
 	}
 
 	/**
@@ -414,8 +503,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					runOnUiThread(new Runnable() {
 						public void run() {
 						    refreshMembers();
-							((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount()
-									+ st);
+							/*((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount()
+									+ st);*/
 							progressDialog.dismiss();
 						}
 					});
@@ -534,17 +623,20 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	 * @author admin_new
 	 * 
 	 */
-	private class GridAdapter extends ArrayAdapter<String> {
+	private class GridAdapter extends BaseAdapter {
 
 		private int res;
 		public boolean isInDeleteMode;
-		private List<String> objects;
+		ArrayList<Member> members;
 
-		public GridAdapter(Context context, int textViewResourceId, List<String> objects) {
-			super(context, textViewResourceId, objects);
-			this.objects = objects;
+		Context context;
+
+		public GridAdapter(Context context, int textViewResourceId, ArrayList<Member> objects) {
+			//super(context, textViewResourceId, objects);
+			this.members = objects;
 			res = textViewResourceId;
 			isInDeleteMode = false;
+			this.context = context;
 		}
 
 		@Override
@@ -552,8 +644,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 		    ViewHolder holder = null;
 			if (convertView == null) {
 			    holder = new ViewHolder();
-				convertView = LayoutInflater.from(getContext()).inflate(res, null);
-				holder.imageView = (ImageView) convertView.findViewById(R.id.iv_avatar);
+				convertView = LayoutInflater.from(context).inflate(res, null);
+				holder.imageView = (NetworkImageView) convertView.findViewById(R.id.iv_avatar);
 				holder.textView = (TextView) convertView.findViewById(R.id.tv_name);
 				holder.badgeDeleteView = (ImageView) convertView.findViewById(R.id.badge_delete);
 				convertView.setTag(holder);
@@ -565,7 +657,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 			if (position == getCount() - 1) {
 			    holder.textView.setText("");
 				// 设置成删除按钮
-			    holder.imageView.setImageResource(R.drawable.smiley_minus_btn);
+			    holder.imageView.setDefaultImageResId(R.drawable.smiley_minus_btn);
 //				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_minus_btn, 0, 0);
 				// 如果不是创建者或者没有相应权限，不提供加减人按钮
 				if (!group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
@@ -592,7 +684,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 				}
 			} else if (position == getCount() - 2) { // 添加群组成员按钮
 			    holder.textView.setText("");
-			    holder.imageView.setImageResource(R.drawable.smiley_add_btn);
+			    holder.imageView.setDefaultImageResId(R.drawable.smiley_add_btn);
 //				button.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.smiley_add_btn, 0, 0);
 				// 如果不是创建者或者没有相应权限
 				if (!group.isAllowInvites() && !group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
@@ -619,14 +711,19 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					});
 				}
 			} else { // 普通item，显示群组成员
-				final String username = getItem(position);
+				final Member member = getItem(position);
 				convertView.setVisibility(View.VISIBLE);
 				button.setVisibility(View.VISIBLE);
 //				Drawable avatar = getResources().getDrawable(R.drawable.default_avatar);
 //				avatar.setBounds(0, 0, referenceWidth, referenceHeight);
 //				button.setCompoundDrawables(null, avatar, null, null);
-				holder.textView.setText(username);
-				UserUtils.setUserAvatar(getContext(), username, holder.imageView);
+
+				UserUtils.setUserBeanAvatar(member,holder.imageView);
+				UserUtils.setUserBeanNick(member,holder.textView);
+
+				/*holder.textView.setText(username);
+				UserUtils.setUserAvatar(context, username, holder.imageView);*/
+
 				// demo群组成员的头像都用默认头像，需由开发者自己去设置头像
 				if (isInDeleteMode) {
 					// 如果是删除模式下，显示减人图标
@@ -643,7 +740,7 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 					public void onClick(View v) {
 						if (isInDeleteMode) {
 							// 如果是删除自己，return
-							if (EMChatManager.getInstance().getCurrentUser().equals(username)) {
+							if (currentUserName.equals(member.getMMemberUserName())) {
 								startActivity(new Intent(GroupDetailsActivity.this, AlertDialog.class).putExtra("msg", st12));
 								return;
 							}
@@ -651,8 +748,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 								Toast.makeText(getApplicationContext(), getString(R.string.network_unavailable), Toast.LENGTH_SHORT).show();
 								return;
 							}
-							EMLog.d("group", "remove user from group:" + username);
-							deleteMembersFromGroup(username);
+							EMLog.d("group", "remove user from group:" + member.getMMemberUserName());
+							deleteMembersFromGroup(member.getMMemberUserName());
 						} else {
 							// 正常情况下点击user，可以进入用户详情或者聊天页面等等
 							// startActivity(new
@@ -687,8 +784,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 										public void run() {
 											deleteDialog.dismiss();
 											refreshMembers();
-											((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "("
-													+ group.getAffiliationsCount() + st);
+											/*((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "("
+													+ group.getAffiliationsCount() + st);*/
 										}
 									});
 								} catch (final Exception e) {
@@ -709,14 +806,14 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 
 					@Override
 					public boolean onLongClick(View v) {
-					    if(EMChatManager.getInstance().getCurrentUser().equals(username))
+					    if(currentUserName.equals(member.getMMemberUserName()))
 					        return true;
 						if (group.getOwner().equals(EMChatManager.getInstance().getCurrentUser())) {
 							Intent intent = new Intent(GroupDetailsActivity.this, AlertDialog.class);
 							intent.putExtra("msg", st15);
 							intent.putExtra("cancel", true);
 							startActivityForResult(intent, REQUEST_CODE_ADD_TO_BALCKLIST);
-							longClickUsername = username;
+							longClickUsername = member.getMMemberUserName();
 						}
 						return false;
 					}
@@ -727,7 +824,26 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 
 		@Override
 		public int getCount() {
-			return super.getCount() + 2;
+			return members!=null?members.size()+2:2;
+		}
+
+		@Override
+		public Member getItem(int position) {
+			return members.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return 0;
+		}
+
+		public void clear() {
+			if (members!=null)
+			members.clear();
+		}
+
+		public void addAll(ArrayList<Member> members) {
+			members.addAll(members);
 		}
 	}
 
@@ -741,8 +857,8 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 
 					runOnUiThread(new Runnable() {
 						public void run() {
-							((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount()
-									+ ")");
+							/*((TextView) findViewById(R.id.group_name)).setText(group.getGroupName() + "(" + group.getAffiliationsCount()
+									+ ")");*/
 							loadingPB.setVisibility(View.INVISIBLE);
 							refreshMembers();
 							if (EMChatManager.getInstance().getCurrentUser().equals(group.getOwner())) {
@@ -792,13 +908,31 @@ public class GroupDetailsActivity extends BaseActivity implements OnClickListene
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		if (mReceiver!=null){
+			unregisterReceiver(mReceiver);
+		}
 		instance = null;
+
 	}
 	
 	private static class ViewHolder{
-	    ImageView imageView;
+	    NetworkImageView imageView;
 	    TextView textView;
 	    ImageView badgeDeleteView;
 	}
 
+	class DownloadMembersReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			refreshMembers();
+			//adapter.notifyDataSetChanged();
+		}
+	}
+	DownloadMembersReceiver mReceiver;
+	public void registerDownloadMembersReceiver(){
+		mReceiver = new DownloadMembersReceiver();
+		IntentFilter filter = new IntentFilter("update_group_members_list");
+		registerReceiver(mReceiver,filter);
+	}
 }
