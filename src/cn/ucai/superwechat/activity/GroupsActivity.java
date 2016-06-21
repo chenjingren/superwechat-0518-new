@@ -92,22 +92,26 @@ public class GroupsActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_groups);
 
-		initVeiw();
+		initView();
+
+		initData();
 
 		setListener();
+
+		refresh();
+
+		registerGroupListChangedReceiver();
+	}
+
+	private void initData() {
+		inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		grouplist = SuperWeChatApplication.getInstance().getGroupList();
 
 		syncListener = new SyncListener();
 		HXSDKHelper.getInstance().addSyncGroupListener(syncListener);
 
-		if (!HXSDKHelper.getInstance().isGroupsSyncedWithServer()) {
-			progressBar.setVisibility(View.VISIBLE);
-		} else {
-			progressBar.setVisibility(View.GONE);
-		}
-		
-		refresh();
-
-		registerGroupListChangedReceiver();
+		groupAdapter = new GroupAdapter(this, 1, grouplist);
+		groupListView.setAdapter(groupAdapter);
 	}
 
 	private void setListener() {
@@ -147,7 +151,7 @@ public class GroupsActivity extends BaseActivity {
 					Intent intent = new Intent(GroupsActivity.this, ChatActivity.class);
 					// it is group chat
 					intent.putExtra("chatType", ChatActivity.CHATTYPE_GROUP);
-					intent.putExtra("groupId", groupAdapter.getItem(position - 3).getMGroupId());
+					intent.putExtra("groupId", groupAdapter.getItem(position).getMGroupHxid());
 					startActivityForResult(intent, 0);
 				}
 			}
@@ -164,20 +168,22 @@ public class GroupsActivity extends BaseActivity {
 		});
 	}
 
-	private void initVeiw() {
+	private void initView() {
 		instance = this;
-		inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		grouplist = SuperWeChatApplication.getInstance().getGroupList();
+
 		groupListView = (ListView) findViewById(R.id.list);
 
 		swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_layout);
 		swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
 				android.R.color.holo_orange_light, android.R.color.holo_red_light);
 
-		groupAdapter = new GroupAdapter(this, 1, grouplist);
-		groupListView.setAdapter(groupAdapter);
-
 		progressBar = (View)findViewById(R.id.progress_bar);
+
+		if (!HXSDKHelper.getInstance().isGroupsSyncedWithServer()) {
+			progressBar.setVisibility(View.VISIBLE);
+		} else {
+			progressBar.setVisibility(View.GONE);
+		}
 	}
 
 	/**
@@ -214,7 +220,7 @@ public class GroupsActivity extends BaseActivity {
 		super.onDestroy();
 		instance = null;
 	}
-	
+
 	public void refresh() {
 		if (groupListView != null && groupAdapter != null) {
 			grouplist = SuperWeChatApplication.getInstance().getGroupList();
@@ -246,7 +252,7 @@ public class GroupsActivity extends BaseActivity {
 					groupAdapter.initList(list);
 				}
 			}
-			//refresh();
+			refresh();
 		}
 	}
 	GroupListChangedReceiver mReceiver;
