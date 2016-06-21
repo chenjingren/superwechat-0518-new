@@ -127,8 +127,9 @@ public class GroupSimpleDetailActivity extends BaseActivity {
 	private Response.Listener<Group> responseFindPublicGroupListener() {
 		return new Response.Listener<Group>() {
 			@Override
-			public void onResponse(Group group) {
+			public void onResponse(Group g) {
 				if (group!=null){
+					group = g;
 					showGroupDetail();
 				}else {
 					final String st1 = getResources().getString(R.string.Failed_to_get_group_chat_information);
